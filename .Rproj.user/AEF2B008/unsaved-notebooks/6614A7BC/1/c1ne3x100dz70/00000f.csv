@@ -1,9 +1,0 @@
-"0","#plotting partial autocorrelation function for MA model"
-"2","Warning messages:
-"
-"2","1: package ‘changepoint’ was built under R version 4.4.1 
-"
-"2","2: package ‘zoo’ was built under R version 4.4.1 
-"
-"0","pacfma<- ARMAacf(amgendata$amgen_Close, lag.max=9)"
-"0","plot(1:10,pacfma, type=""h"", main=""Partial Autocorrelation Function for MA Model"", xlab=""Lag"", ylab=""PACF"")"

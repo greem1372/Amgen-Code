@@ -1,4 +1,0 @@
-"0","#plotting actual and fitted MA(10) model values"
-"0","MA10.model<- arima(amgendata$amgen_Close, order = c(0, 0, 10))"
-"0","plot(as.POSIXct(amgendata$Date), amgendata$amgen_Close, main=""Daily amgen Stock "
-"0","Closing Prices with MA(10) Model"", lty=1, pch="""", xlab=""Time"",ylab=""Stock Price"", panel.first=grid())"
