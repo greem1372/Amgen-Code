@@ -1,0 +1,4 @@
+"0","loess(index, amgendata$amgen_Close, degree = 1, use.span = 0.05, plot = TRUE, main = ""Smoothing parameter = 0.05 "
+"0","      95% confidence band"", )"
+"2","Error in attr(x, ""formula"") %||% { : invalid formula
+"

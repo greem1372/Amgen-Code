@@ -1,0 +1,2 @@
+"0","legend(""bottomleft"", c(""actual"",""ARIMA forecast"",""Conf. band""), lty=c(1,1,3),"
+"0","lwd=2, col=c(""green"",""navy"",""navy""), cex=0.7)"

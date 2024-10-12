@@ -1,0 +1,4 @@
+"0","fitted.loess<- predict(loess.fit, se=TRUE)"
+"0","lcl<- fitted.loess$fit - 1.96*fitted.loess$se.fit"
+"0","ucl<- fitted.loess$fit + 1.96*fitted.loess$se.fit"
+"0","lines(index,lcl,lty=2)"

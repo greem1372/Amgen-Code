@@ -1,0 +1,28 @@
+{
+    "id": "6614A7BC",
+    "path": null,
+    "project_path": null,
+    "type": "r_markdown",
+    "hash": "580653190",
+    "contents": "",
+    "dirty": true,
+    "created": 1719431242299.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "450,52",
+        "scrollLine": "402"
+    },
+    "folds": "30|6|53|0|\n55|6|62|0|\n64|6|87|0|\n89|6|115|0|\n117|6|141|0|\n143|6|167|0|\n169|6|193|0|\n195|6|220|0|\n222|6|246|0|\n248|6|272|0|\n274|6|298|0|\n300|6|312|0|\n314|6|349|0|\n351|6|382|0|\n384|6|399|0|\n401|6|428|0|\n430|6|442|0|\n532|6|562|0|\n",
+    "lastKnownWriteTime": 1719098651,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1724991106114,
+    "read_only": false,
+    "read_only_alternatives": []
+}

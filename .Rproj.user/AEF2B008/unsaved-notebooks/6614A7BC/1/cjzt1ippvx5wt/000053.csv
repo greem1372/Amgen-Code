@@ -1,0 +1,6 @@
+"0","#fitting ARIMA(1,1) model"
+"0","ARIMA.model <- auto.arima(amgendata$amgen_Close)"
+"0","forecasted <- forecast(ARIMA.model, h=20)"
+"0",""
+"0","# Plot with zoom on the end"
+"0","plot(forecasted, xlim=c(1145, 1180), ylim = c(300,360))"

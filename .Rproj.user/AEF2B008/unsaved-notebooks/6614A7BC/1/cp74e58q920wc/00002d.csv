@@ -1,0 +1,1 @@
+"0","lines(as.POSIXct(amgendata$Date), fitted(AR1.model), lwd=1, col=""black"")"

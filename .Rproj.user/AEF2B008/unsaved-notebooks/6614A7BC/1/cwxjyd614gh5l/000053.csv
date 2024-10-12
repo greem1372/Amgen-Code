@@ -1,0 +1,4 @@
+"0","index <- 1:length(amgendata$amgen_Close)"
+"0","# finding the AICC-optimal smoothing parameter"
+"0","loess.fit <- loess.as(index, amgendata$amgen_Close, degree=1, criterion=c(""aicc""), plot=TRUE,"
+"0","main=""Smoothing Parameter = 0.05 (AICC Optimal)"")"

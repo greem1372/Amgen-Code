@@ -1,0 +1,10 @@
+"0","library(forecast)"
+"2","Warning:"
+"2"," package ‘forecast’ was built under R version 4.4.1
+"
+"2","Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo 
+"
+"0","#plotting partial autocorrelation function for AR model"
+"0","pacf(amgendata$amgen_Close, 10, main=""Partial Autocorrelation Function for AR Model"", xlab=""Lag"", ylab=""PACF"")"

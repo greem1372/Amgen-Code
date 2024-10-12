@@ -1,0 +1,1 @@
+"0","lines(as.POSIXct(test.data$Date), ARIMA.pred$pred, lwd=2, col=""navy"")"

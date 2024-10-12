@@ -1,0 +1,13 @@
+"0","# Perform anomaly detection and store results"
+"0","anomaly_results <- amgendata_tbl %>%"
+"0","  time_decompose(amgen_Close, method = ""stl"") %>%"
+"0","  anomalize(remainder, alpha = 0.1, method = ""iqr"") %>%"
+"0","  time_recompose() %>%"
+"0","  filter(anomaly == ""Yes"") |>"
+"0","  select(Date, anomaly, observed) # Removed incorrect usage of .groups"
+"2","frequency = 5 days
+"
+"2","trend = 63 days
+"
+"0","# Display the dates and observed values of anomalies"
+"0","print(anomaly_results)"

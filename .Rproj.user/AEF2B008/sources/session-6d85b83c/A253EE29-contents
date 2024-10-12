@@ -1,0 +1,540 @@
+#libraries
+```{r}
+# Load Required Libraries 
+if (!requireNamespace("zoo", quietly = TRUE)) {
+  install.packages("zoo")
+}
+if (!requireNamespace("TTR", quietly = TRUE)) {
+  install.packages("TTR")
+}
+if (!requireNamespace("quantmod", quietly = TRUE)) {
+  install.packages("quantmod")
+}
+if (!requireNamespace("plotly", quietly = TRUE)) {
+  install.packages("plotly")
+}
+if (!requireNamespace("fANCOVA", quietly = TRUE)) {
+  install.packages("fANCOVA")
+}
+library(fANCOVA)
+library(TTR)
+library(quantmod)
+library(dplyr) 
+library(ggplot2)
+library(plotly)
+```
+#Amgen data
+```{r}
+# Download Amgen Stock Data
+getSymbols("AMGN", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+amgen_df <- data.frame(Date = index(AMGN), coredata(AMGN)) %>%
+  select(Date, AMGN.Adjusted) %>%
+  rename(amgen_Close = AMGN.Adjusted)
+
+# Save Data to CSV
+write.csv(amgen_df, file = "./amgen_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+amgen_data <- read.csv(file = "./amgen_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot Amgen Stock Price
+amgen_data$Date <- as.Date(amgen_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+amgen_plot <- ggplot(amgen_data, aes(x = Date, y = amgen_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of Amgen Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+amgen_plot
+``` 
+#Amgen change pt detection
+```{r}
+library(changepoint)
+change.mean<- cpt.mean(amgendata$amgen_Close, penalty="AIC", method="BinSeg", Q=5)
+plot(change.mean, cpt.col="red", ylab="Daily Closing Price of amgen Stock", main="Change Point Detection for Change in Mean", xlab="Time", xaxt = "n")
+axis(1, at = c(9,262,513,752), labels=c("1/4/2021","1/4/2022","1/4/2023", "12/15/2023"))
+print(change.mean)
+amgendata[c(72, 561, 905, 994, 1091), ]
+```
+#Amgen anomaly detection
+```{r}
+#detecting anomalies
+amgendata$Date<- as.Date(amgendata$Date, format="%Y-%m-%d")
+install.packages("tibbletime")
+library(tibbletime) 
+amgendata_tbl <- as_tbl_time(amgendata, Date)
+install.packages("anomalize")
+library(anomalize) 
+library(tidyverse)
+amgendata_tbl %>% time_decompose(amgen_Close, method="stl") %>% 
+anomalize(remainder, alpha=0.1, method="iqr") %>% time_recompose() %>% 
+plot_anomalies(time_recomposed=TRUE, color_no='darkblue', color_yes='red',fill_ribbon='gray', size_circles=4) + labs(title="Anomalies in Daily Closing Prices of amgen Stock", 
+subtitle="01/01/2020-07/23/2024")
+# Perform anomaly detection and store results
+anomaly_results <- amgendata_tbl %>%
+  time_decompose(amgen_Close, method = "stl") %>%
+  anomalize(remainder, alpha = 0.1, method = "iqr") %>%
+  time_recompose() %>%
+  filter(anomaly == "Yes") |>
+  select(Date, anomaly, observed)
+
+# Display the dates and observed values of anomalies
+print(anomaly_results)
+```
+#TDY data
+```{r}
+library(ggplot2)
+# Download TDY Stock Data
+getSymbols("TDY", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+TDY_df <- data.frame(Date = index(TDY), coredata(TDY)) %>%
+  select(Date, TDY.Adjusted) %>%
+  rename(TDY_Close = TDY.Adjusted)
+
+# Save Data to CSV
+write.csv(TDY_df, file = "./TDY_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+TDY_data <- read.csv(file = "./TDY_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot TDY Stock Price
+TDY_data$Date <- as.Date(TDY_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+TDY_plot <- ggplot(TDY_data, aes(x = Date, y = TDY_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of TDY Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(TDY_plot)
+
+```
+#MNKD data
+```{r}
+# Download MNKD Stock Data
+getSymbols("MNKD", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+MNKD_df <- data.frame(Date = index(MNKD), coredata(MNKD)) %>%
+  select(Date, MNKD.Adjusted) %>%
+  rename(MNKD_Close = MNKD.Adjusted)
+
+# Save Data to CSV
+write.csv(MNKD_df, file = "./MNKD_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+MNKD_data <- read.csv(file = "./MNKD_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot MNKD Stock Price
+MNKD_data$Date <- as.Date(MNKD_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+MNKD_plot <- ggplot(MNKD_data, aes(x = Date, y = MNKD_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of MNKD Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(MNKD_plot)
+```
+#TAK data
+```{r}
+# Download TAK Stock Data
+getSymbols("TAK", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+TAK_df <- data.frame(Date = index(TAK), coredata(TAK)) %>%
+  select(Date, TAK.Adjusted) %>%
+  rename(TAK_Close = TAK.Adjusted)
+
+# Save Data to CSV
+write.csv(TAK_df, file = "./TAK_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+TAK_data <- read.csv(file = "./TAK_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot MNKD Stock Price
+TAK_data$Date <- as.Date(TAK_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+TAK_plot <- ggplot(TAK_data, aes(x = Date, y = TAK_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of TAK Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(TAK_plot)
+```
+#LLY data
+```{r}
+# Download LLY Stock Data
+getSymbols("LLY", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+LLY_df <- data.frame(Date = index(LLY), coredata(LLY)) %>%
+  select(Date, LLY.Adjusted) %>%
+  rename(LLY_Close = LLY.Adjusted)
+
+# Save Data to CSV
+write.csv(LLY_df, file = "./LLY_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+LLY_data <- read.csv(file = "./LLY_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot LLY Stock Price
+LLY_data$Date <- as.Date(LLY_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+LLY_plot <- ggplot(LLY_data, aes(x = Date, y = LLY_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of LLY Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(LLY_plot)
+```
+#JNJ data
+```{r}
+# Download JNJ Stock Data
+getSymbols("JNJ", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+JNJ_df <- data.frame(Date = index(JNJ), coredata(JNJ)) %>%
+  select(Date, JNJ.Adjusted) %>%
+  rename(JNJ_Close = JNJ.Adjusted)
+
+# Save Data to CSV
+write.csv(JNJ_df, file = "./JNJ_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+JNJ_data <- read.csv(file = "./JNJ_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot JNJ Stock Price
+JNJ_data$Date <- as.Date(JNJ_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+JNJ_plot <- ggplot(JNJ_data, aes(x = Date, y = JNJ_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of JNJ Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(JNJ_plot)
+
+```
+#PFE data
+```{r}
+# Download PFE Stock Data
+getSymbols("PFE", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+PFE_df <- data.frame(Date = index(PFE), coredata(PFE)) %>%
+  select(Date, PFE.Adjusted) %>%
+  rename(PFE_Close = PFE.Adjusted)
+
+# Save Data to CSV
+write.csv(PFE_df, file = "./PFE_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+PFE_data <- read.csv(file = "./PFE_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot PFE Stock Price
+PFE_data$Date <- as.Date(PFE_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+PFE_plot <- ggplot(PFE_data, aes(x = Date, y = PFE_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of PFE Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(PFE_plot)
+```
+#MRNA data
+```{r}
+# Download MRNA Stock Data
+getSymbols("MRNA", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+MRNA_df <- data.frame(Date = index(MRNA), coredata(MRNA)) %>%
+  select(Date, MRNA.Adjusted) %>%
+  rename(MRNA_Close = MRNA.Adjusted)
+
+# Save Data to CSV
+write.csv(MRNA_df, file = "./MRNA_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+MRNA_data <- read.csv(file = "./MRNA_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot MRNA Stock Price
+MRNA_data$Date <- as.Date(MRNA_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+MRNA_plot <- ggplot(MRNA_data, aes(x = Date, y = MRNA_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of MRNA Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(MRNA_plot)
+```
+#Tesla data
+```{r}
+# Download TSLA Stock Data
+getSymbols("TSLA", from = "2020-01-01", to = "2024-07-23")
+
+# Convert to Dataframe and Select Relevant Columns
+TSLA_df <- data.frame(Date = index(TSLA), coredata(TSLA)) %>%
+  select(Date, TSLA.Adjusted) %>%
+  rename(TSLA_Close = TSLA.Adjusted)
+
+# Save Data to CSV
+write.csv(TSLA_df, file = "./TSLA_stock_data_clean.csv", row.names = FALSE)
+
+# Read and Plot the Data
+TSLA_data <- read.csv(file = "./TSLA_stock_data_clean.csv", header = TRUE, sep = ",")
+
+# Plot TSLA Stock Price
+TSLA_data$Date <- as.Date(TSLA_data$Date, "%Y-%m-%d")  # Convert Date to Date type
+TSLA_plot <- ggplot(TSLA_data, aes(x = Date, y = TSLA_Close)) +
+  geom_line(color = "blue", linewidth = 0.7) +
+  labs(title = "Daily Closing Price of TSLA Stock", x = "Date", y = "Price") +
+  theme_minimal()
+
+# Display the Plot
+print(TSLA_plot)
+```
+#Granger tests
+```{r}
+library(readr)
+library(lmtest)
+library(dplyr)
+stock_data <- merge(amgen_df, PFE_df, by = "Date")
+for (order in 1:5)
+{
+  p_value <- grangertest(P_Close~amgen_Close, order = order, data = stock_data)$`Pr(>F)`[2]
+  {
+    print(paste(p_value))
+  }
+}
+```
+#GBM
+```{r}
+date<- as.POSIXct(amgendata$Date)
+price<- amgendata$amgen_Close	
+##############################################
+#  fitting geometric Brownian motion
+##############################################
+# calculating increments of log-price
+log.inc<- c()
+price1<- price[-1]
+price1.lag<- head(price, -1)
+log.ratio<- log(price1/price1.lag)
+# plotting histogram of log-price increments
+install.packages("rcompanion")
+library(rcompanion)
+plotNormalHistogram(log.ratio, main="Histogram for Log-price Increments",
+xlab="Log-price increments", col="sky blue")
+shapiro.test(log.ratio)
+#W = 0.90681, p-value < 2.2e-16, not normally distributed
+#estimating parameters
+mu.hat <- mean(log.ratio)
+sigma.hat <- sd(log.ratio)
+BM <- c()
+BM[1] <- 0
+plot(date, price, type = "l", lty = 1, lwd = 2, col = "blue", xlab = "Time", main = "Actual and Simulated Amgen Stock Prices", ylim = c(0, 500), ylab = "Amgen Stock Price", first.panel = grid())
+legend("topleft", c("Actual price", "Simulated price"), lty = 1, col = c("blue", "gray"))
+set.seed(1234123)
+for (j in 1:10) {
+  BM <- c()
+  BM[1] <- 0
+  nrows <- length(price)
+  for (i in 2:nrows)
+    BM[i] <- mu.hat + BM[i - 1] + sigma.hat * rnorm(1)
+  GBM <- price[1] * exp(BM)
+  lines(date, GBM, lwd = 2, col = "light gray")
+}
+```
+#Ornstein-Uhlenbeck
+```{r}
+# estimating parameters
+price.lag1<- head(price,-1)
+increment<- price[-1]-price.lag1
+fit<- glm(increment ~ price.lag1)
+# simulating OU process
+set.seed(469204)
+OU<- c()
+OU[1]<- price[1]
+for (i in 2:nrows)
+  OU[i]<- OU[i-1]+theta.hat*(mu.hat-OU[i-1])+sigma.hat*rnorm(1)
+
+# plotting actual and simulated trajectories
+plot(date, price, type="l", lty=1, lwd=2, col="blue",xlab="Time", 
+main="Actual and Simulated Amgen Stock Prices", ylab="Amgen Stock Price", 
+first.panel=grid())
+lines(date, OU, lwd=2, col="purple")
+legend("topright", c("Actual price", "Simulated price"), lty=1, col=c("blue", "purple"))
+# simulating multiple trajectories of Ornstein-Uhlenbeck process
+plot(date, price, type="l", lty=1, lwd=2, col="blue",xlab="Time", main="Actual and Simulated Amgen Stock Prices", ylim=c(100,450), ylab="Amgen Stock Price", first.panel=grid())
+legend("topright", c("Actual price", "Simulated price"), lty=1, col=c("blue", "gray"))
+
+set.seed(864548)
+for (j in 1:10) {
+  OU<- c()
+  OU[1]<- price[1]
+  for (i in 2:nrows)
+    OU[i]<- OU[i-1]+theta.hat*(mu.hat-OU[i-1])+sigma.hat*rnorm(1)
+lines(date, OU, lwd=2, col="light gray")
+}
+
+```
+#AR model
+```{r}
+library(forecast)
+
+#plotting partial autocorrelation function for AR model
+pacf(amgendata$amgen_Close, 10, main="Partial Autocorrelation Function for AR Model", xlab="Lag", ylab="PACF")
+AR1.model<- ar(amgendata$amgen_Close, order.max=1, method="ols")
+AR1.model
+#plotting actual and fitted AR(1) model values
+plot(as.POSIXct(amgendata$Date), amgendata$amgen_Close, main="Daily Amgen Stock 
+Closing Prices with AR(1) Model", lty=1, pch="", xlab="Time",ylab="Stock Price", panel.first=grid())
+lines(as.POSIXct(amgendata$Date), amgendata$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(amgendata$Date), fitted(AR1.model), lwd=1, col="black")
+legend("topright", c("actual","AR(1) fitted"), lty=1, lwd=2, col=c("green","black"))
+
+
+```
+#MA model
+```{r}
+#plotting partial autocorrelation function for MA model
+pacfma<- ARMAacf(amgendata$amgen_Close, lag.max=9)
+plot(1:10,pacfma, type="h", main="Partial Autocorrelation Function for MA Model", xlab="Lag", ylab="PACF")
+abline(h=0)
+#plotting actual and fitted MA(7) model values
+MA7.model<- arima(amgendata$amgen_Close, order = c(0, 0, 7))
+plot(as.POSIXct(amgendata$Date), amgendata$amgen_Close, main="Daily amgen Stock 
+Closing Prices with MA(7) Model", lty=1, pch="", xlab="Time",ylab="Stock Price", panel.first=grid())
+lines(as.POSIXct(amgendata$Date), amgendata$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(amgendata$Date), fitted(MA7.model), lwd=1, col="navy")
+legend("topright", c("actual","MA(7) fitted"), lty=1, lwd=2, col=c("green","navy"))
+#plotting actual and fitted MA(9) model values
+MA9.model<- arima(amgendata$amgen_Close, order = c(0, 0, 9))
+plot(as.POSIXct(amgendata$Date), amgendata$amgen_Close, main="Daily amgen Stock 
+Closing Prices with MA(9) Model", lty=1, pch="", xlab="Time",ylab="Stock Price", panel.first=grid())
+lines(as.POSIXct(amgendata$Date), amgendata$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(amgendata$Date), fitted(MA9.model), lwd=1, col="navy")
+legend("topright", c("actual","MA(9) fitted"), lty=1, lwd=2, col=c("green","navy"))
+#plotting actual and fitted MA(10) model values
+MA10.model<- arima(amgendata$amgen_Close, order = c(0, 0, 10))
+plot(as.POSIXct(amgendata$Date), amgendata$amgen_Close, main="Daily amgen Stock 
+Closing Prices with MA(10) Model", lty=1, pch="", xlab="Time",ylab="Stock Price", panel.first=grid())
+lines(as.POSIXct(amgendata$Date), amgendata$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(amgendata$Date), fitted(MA10.model), lwd=1, col="navy")
+legend("topright", c("actual","MA(10) fitted"), lty=1, lwd=2, col=c("green","navy"))
+
+```
+#ARMA model
+```{r}
+#fitting ARMA(1,1) model
+
+ARMA.model<- arima(amgendata$amgen_Close, order = c(1,0,1))
+
+#plotting actual and fitted ARMA(1,1) model values
+plot(as.POSIXct(amgendata$Date), amgendata$amgen_Close, main="Daily Tesla Stock 
+Closing Prices with ARMA(1,1) Model", lty=1, pch="", xlab="Time",ylab="Stock Price", panel.first=grid())
+lines(as.POSIXct(amgendata$Date), amgendata$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(amgendata$Date), fitted(ARMA.model), lwd=1, col="navy")
+legend("topright", c("actual","ARMA(1,1) fitted"), lty=1, lwd=2, col=c("green","navy"))
+
+```
+#forecasting
+```{r}
+nrow(amgendata)
+#splitting data into testing and training sets
+train.data<- amgendata[1:1000,1:2]
+test.data<- amgendata[1001:1145,1:2]
+
+#plotting training and testing data
+plot(as.POSIXct(amgendata$Date), amgendata$amgen_Close, main="Daily Amgen Stock Closing Prices", xlab="Time", ylab="Stock Price", pch="", panel.first=grid())
+lines(as.POSIXct(train.data$Date), train.data$amgen_Close, lwd=2, col="blue")
+lines(as.POSIXct(test.data$Date), test.data$amgen_Close, lwd=2, col="green")
+legend("topright", c("training", "testing"), lty=1, lwd=2, col=c("blue","green"))
+#computing forecasted values for the fitted models
+n<- nrow(test.data)
+AR1.pred<- data.frame(predict(AR1.model, n.ahead=n))
+MA7.pred<- data.frame(predict(MA7.model, n.ahead=n))
+MA9.pred<- data.frame(predict(MA9.model, n.ahead=n))
+MA10.pred<- data.frame(predict(MA10.model, n.ahead=n))
+ARMA.pred<- data.frame(predict(ARMA.model, n.ahead=n))
+#plotting actual and AR(1) forecasted values for testing data 
+plot(as.POSIXct(test.data$Date), test.data$amgen_Close, main="Amgen Stock Prices 
+with AR(1) Forecasted Values", lty=1, pch="", xlab="Time",ylab="Stock Price", ylim=c(100,400), panel.first=grid())
+lines(as.POSIXct(test.data$Date), test.data$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(test.data$Date), AR1.pred$pred, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), AR1.pred$pred-1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), AR1.pred$pred+1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+legend("bottomleft", c("actual","AR(1) forecast","Conf. band"), lty=c(1,1,3), 
+lwd=2, col=c("green","navy","navy"), cex=0.7)
+#plotting actual and MA(7) forecasted values for testing data 
+plot(as.POSIXct(test.data$Date), test.data$amgen_Close, main="Amgen Stock Prices 
+with MA(7) Forecasted Values", lty=1, pch="", xlab="Time",ylab="Stock Price", ylim=c(100,400), panel.first=grid())
+lines(as.POSIXct(test.data$Date), test.data$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(test.data$Date), MA7.pred$pred, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), MA7.pred$pred-1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), MA7.pred$pred+1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+legend("bottomleft", c("actual","MA(1) forecast","Conf. band"), lty=c(1,1,3), 
+lwd=2, col=c("green","navy","navy"), cex=0.7)
+#plotting actual and MA(9) forecasted values for testing data 
+plot(as.POSIXct(test.data$Date), test.data$amgen_Close, main="Amgen Stock Prices 
+with MA(9) Forecasted Values", lty=1, pch="", xlab="Time",ylab="Stock Price", ylim=c(100,400),
+panel.first=grid())
+lines(as.POSIXct(test.data$Date), test.data$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(test.data$Date), MA9.pred$pred, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), MA9.pred$pred-1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), MA9.pred$pred+1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+legend("bottomleft", c("actual","MA(4) forecast","Conf. band"), lty=c(1,1,3), 
+lwd=2, col=c("green","navy","navy"), cex=0.7)
+#plotting actual and MA(10) forecasted values for testing data 
+plot(as.POSIXct(test.data$Date), test.data$amgen_Close, main="Amgen Stock Prices 
+with MA(10) Forecasted Values", lty=1, pch="", xlab="Time",ylab="Stock Price", ylim=c(100,400),
+panel.first=grid())
+lines(as.POSIXct(test.data$Date), test.data$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(test.data$Date), MA10.pred$pred, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), MA10.pred$pred-1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), MA10.pred$pred+1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+legend("bottomleft", c("actual","MA(4) forecast","Conf. band"), lty=c(1,1,3), 
+lwd=2, col=c("green","navy","navy"), cex=0.7)
+#plotting actual and ARMA(1,1) forecasted values for testing data 
+plot(as.POSIXct(test.data$Date), test.data$amgen_Close, main="Amgen Stock Prices 
+with ARMA(1,1) Forecasted Values", lty=1, pch="", xlab="Time",ylab="Stock Price", ylim=c(100,400),
+panel.first=grid())
+lines(as.POSIXct(test.data$Date), test.data$amgen_Close, lwd=2, col="green")
+lines(as.POSIXct(test.data$Date), ARMA.pred$pred, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), ARMA.pred$pred-1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+lines(as.POSIXct(test.data$Date), ARMA.pred$pred+1.96*AR1.pred$se, lty=2, lwd=2, col="navy")
+legend("bottomleft", c("actual","ARMA(1,1) forecast","Conf. band"), lty=c(1,1,3), 
+lwd=2, col=c("green","navy","navy"), cex=0.7)
+```
+#LOESS
+```{r}
+index <- 1:length(amgendata$amgen_Close)
+# finding the AICC-optimal smoothing parameter
+loess.fit <- loess.as(index, amgendata$amgen_Close, degree=1, criterion=c("aicc"), plot=TRUE,
+main="Smoothing Parameter = 0.05 (AICC Optimal)")
+
+# fitting curves with different smoothing parameters
+loess.as(index, amgendata$amgen_Close, degree=1, user.span=0.01, plot=TRUE,
+main="Smoothing Parameter = 0.01")
+# fitting curves with different smoothing parameters
+loess.as(index, amgendata$amgen_Close, degree=1, user.span=0.1, plot=TRUE,
+main="Smoothing Parameter = 0.1")
+# fitting curves with different smoothing parameters
+loess.as(index, amgendata$amgen_Close, degree=1, user.span=0.2, plot=TRUE,
+main="Smoothing Parameter = 0.2")
+# fitting curves with different smoothing parameters
+loess.as(index, amgendata$amgen_Close, degree=2, user.span=0.05, plot=TRUE,
+main="Smoothing Parameter = 0.05")
+# fitting curves with different smoothing parameters
+loess.as(index, amgendata$amgen_Close, degree=2, user.span=0.1, plot=TRUE,
+main="Smoothing Parameter = 0.1")
+# plotting optimal loess curve with confidence band
+loess.as(index, amgendata$amgen_Close, degree=1, criterion=c("aicc"), plot=TRUE,
+main="Smoothing Parameter = 0.05 (AICC Optimal)\n 95% Confidence Band")
+fitted.loess<- predict(loess.fit, se=TRUE)
+lcl<- fitted.loess$fit - 1.96*fitted.loess$se.fit
+ucl<- fitted.loess$fit + 1.96*fitted.loess$se.fit
+lines(index,lcl,lty=2)
+lines(index,ucl,lty=2)
+
+```
+

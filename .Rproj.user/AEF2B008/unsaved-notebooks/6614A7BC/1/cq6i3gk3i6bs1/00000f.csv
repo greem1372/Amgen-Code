@@ -1,0 +1,8 @@
+"0","library(changepoint)"
+"0","change.mean<- cpt.mean(amgendata$amgen_Close, penalty=""AIC"", method=""BinSeg"", Q=5)"
+"2","Warning in BINSEG(sumstat, pen = pen.value, cost_func = costfunc, minseglen = minseglen,  :"
+"2","
+ "
+"2"," The number of changepoints identified is Q, it is advised to increase Q to make sure changepoints have not been missed.
+"
+"0","plot(change.mean, cpt.col=""red"", ylab=""Daily Closing Price of amgen Stock"", main=""Change Point Detection for Change in Mean"", xlab=""Time"", xaxt = ""n"")"

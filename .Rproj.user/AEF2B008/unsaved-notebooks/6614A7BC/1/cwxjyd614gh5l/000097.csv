@@ -1,0 +1,31 @@
+"0","loess.fit <- loess(amgen_Close ~ index, data = amgendata, span = 0.05, degree = 1)"
+"0","pred <- predict(loess.fit, se = TRUE)"
+"0",""
+"0","# Confidence intervals"
+"0","alpha <- 0.05"
+"0","ci_upper <- pred$fit + qt(1 - alpha / 2, pred$df) * pred$se.fit"
+"0","ci_lower <- pred$fit - qt(1 - alpha / 2, pred$df) * pred$se.fit"
+"0","ggplot(amgendata, aes(x = index, y = amgen_Close)) +"
+"0","  geom_point() +"
+"0","  geom_line(aes(y = fit), color = ""blue"") +"
+"0","  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.2) +"
+"0","  labs(title = ""Smoothing parameter = 0.05\n95% confidence band"","
+"0","       x = ""Index"", "
+"0","       y = ""Amgen Close"") +"
+"0","  theme_minimal()"
+"1","[1m[33mError[39m in `geom_line()`:[22m
+[38;5;232m[33m![38;5;232m Problem while computing aesthetics.
+[36mℹ[38;5;232m Error occurred in the 2nd layer.[39m
+[1mCaused by error in `check_aesthetics()`:[22m
+[38;5;232m[33m![38;5;232m Aesthetics must be either length 1 or the same as the data (1145).
+[31m✖[38;5;232m Fix the following mappings: `y`.[39m
+Backtrace:
+[90m  1. [39m[1mbase[22m (local) `<fn>`(x)
+[90m  2. [39mggplot2:::print.ggplot(x)
+[90m  4. [39mggplot2:::ggplot_build.ggplot(x)
+[90m  5. [39mggplot2:::by_layer(...)
+[90m 12. [39mggplot2 (local) f(l = layers[[i]], d = data[[i]])
+[90m 13. [39ml$compute_aesthetics(d, plot)
+[90m 14. [39mggplot2 (local) compute_aesthetics(..., self = self)
+[90m 15. [39m[1m[94mggplot2:::check_aesthetics([39m[22mevaled, n[1m[94m)[39m[22m
+"

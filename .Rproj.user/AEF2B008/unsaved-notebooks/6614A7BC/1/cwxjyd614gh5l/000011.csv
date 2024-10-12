@@ -1,0 +1,5 @@
+"0","index <- 1:length(amgendata$amgen_Close)"
+"0","# finding the AICC-optimal smoothing parameter"
+"0","library('fANCOVA')"
+"2","Error in library(""fANCOVA"") : there is no package called ‘fANCOVA’
+"

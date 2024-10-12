@@ -1,0 +1,1 @@
+"0","lines(as.POSIXct(amgendata$Date), amgendata$amgen_Close, lwd=2, col=""green"")"
